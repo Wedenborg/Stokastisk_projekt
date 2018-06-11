@@ -51,6 +51,36 @@ for (i in 1:length(observed)){
 pvalue = 1- pchisq(t,df=4) # Vi afviser ikke!
 
 ####### Opgave 3
+woman = rep(1,1000)
+N.iter = length(woman)
+count = matrix(0, ncol = 5, nrow = N.iter)
+for (i in 1:N.iter){
+  while (woman[i]<5){
+    count[i,woman[i]] = count[i,woman[i]]+1
+    woman[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[woman[i],])
+  }
+}
 
+hist(rowSums(count))
 
+mean(rowSums((count)))
 
+pi = c(1,0,0,0)
+Ps = P[1:4,1:4]
+p0 = P[1:4,5]
+t=1
+PT = pi%*%((Ps)%^%t)%*%p0
+ptFunk = function(t){
+  pt = pi%*%((Ps)%^%t)%*%p0
+
+  return (pt)
+}
+ppt = vector()
+for (i in 1:1200){
+  ppt[i] = ptFunk(i)
+}
+dev.new()
+hist(rowSums(count),prob = TRUE)
+lines(ppt/1000)
+
+plot(density(ppt))
