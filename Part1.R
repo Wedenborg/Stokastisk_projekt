@@ -209,3 +209,6 @@ n = 100
 Conf_control1 = mean(Z) - qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 Conf_control2 = mean(Z) + qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 c(X_controlbar,Conf_control1,Conf_control2)
+
+sd(X)
+sd(Z)
