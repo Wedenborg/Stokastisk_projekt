@@ -34,10 +34,10 @@ simulate.cancer <- function(N.women=1000, t.max=Inf){
   women = rep(1,N.women)
   #Define matrix for saving how long each women spent in each state
   states = matrix(0, ncol = 5, nrow = N.women)
-  
-  
+
+
   for (i in 1:N.women){
-    #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified  
+    #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
     t = 0
     while (!(women[i]>4 || t>t.max)){
       #Update the time spent in the current state
@@ -90,8 +90,8 @@ chi2.test.samples = function(observed, expected){
   t=0
   for (i in 1:n){
     t=t+((observed[i]-expected[i])^2)/expected[i]
-  } 
-  pvalue = 1- pchisq(t,df=n-1) 
+  }
+  pvalue = 1- pchisq(t,df=n-1)
   return(pvalue)
 }
 
@@ -113,7 +113,7 @@ pt = function(t){
   Ps = P[1:4,1:4]
   #Create a vector for storing the values
   p = vector()
-  
+
   #The matrix power operator doesn't support non-scalar input, so we have to calculate the probabilities one by one
   for (i in t){
     p[i] = pi %*% (Ps%^%i) %*% p0
@@ -135,3 +135,49 @@ p = chi2.test.samples(observed, expected)
 #Update the title of the histogram with the p-value
 title(sprintf('Life time  chi2 p=%0.3e',p))
 sprintf("P-value for chi2 test between the emperical and expected distribution of life time is  p=%s",p)
+
+
+####### Opgave 4
+N.women = 1000
+t.max = Inf
+
+#simulate.cancer <- function(N.women=1000, t.max=Inf){
+  '
+  Simulates the evolution of women who previously had breast cancer
+
+  Args:
+  N.Women : the number of women to simulate
+  t.max : the maximum number of time steps to take. If not specified we will continue until death
+  P : Probability matrix, for moving between the states
+
+  Returns:
+  states : the time spent in each state for each woman
+  '
+  #Initialize all women in state 1
+  woman = rep(1,N.women)
+  #Define matrix for saving how long each women spent in each state
+  states = matrix(0, ncol = 5, nrow = N.women)
+
+  i = 1
+  while (i <=10){
+    #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
+    t = 0
+    accept = FALSE
+    while (!(woman[i]>4 || t>t.max)){
+      #Update the time spent in the current state
+      states[i,woman[i]] = states[i,woman[i]] + 1
+      #Get the new state of the i'th woman
+      woman[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[woman[i],])
+      #Update the time step
+      t = t + 1
+
+    }
+    if (states[i,1]<12 && sum(states[i,]>12 )){
+      i = i +1
+      print(states)
+    }
+  }
+#  return(list("states" = states, "women" = woman))
+#}
+
+
