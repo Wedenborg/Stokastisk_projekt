@@ -75,12 +75,14 @@ hist(life.time, main = 'Distribution of life time', xlab = 't [Months]')
 #run the simulator upto t=120
 simulation.t120 = simulate.cancer(N.woman, t.max = 120)
 
-#Plot the distribution of the states for the different woman at t=120, and save the observed densities
-observed = hist(simulation.t120$woman, breaks = c(0:5), prob=TRUE, main='', xlab = 'State')$density
+
+#Plot the distribution of the states for the different women at t=120, and save the observed densities
+observed = hist(simulation.t120$women, breaks = c(0:5), main='', xlab = 'State')$count
+
 
 #Calculate the expected distribution
 p0 = c(1,0,0,0,0)
-expected = p0 %*% (P%^%120)
+expected = p0 %*% (P%^%120)*N.women
 #Add the expected distribution to the plot
 lines(c(0:4), expected, type="s", col="red")
 
@@ -91,7 +93,7 @@ chi2.test.samples = function(observed, expected){
   for (i in 1:n){
     t=t+((observed[i]-expected[i])^2)/expected[i]
   }
-  pvalue = 1- pchisq(t,df=n-1)
+  pvalue = pchisq(t,df=n-1)
   return(pvalue)
 }
 
@@ -115,20 +117,21 @@ pt = function(t){
   p = vector()
 
   #The matrix power operator doesn't support non-scalar input, so we have to calculate the probabilities one by one
-  for (i in t){
-    p[i] = pi %*% (Ps%^%i) %*% p0
+  for (i in 1:length(t)){
+    p[i] = pi %*% (Ps%^%t[i]) %*% p0
   }
   return(p)
 }
 
 #Plot the emperical distribution of life time again, here binned by every year
-observed = hist(life.time, main = '', xlab = 't [Months]', prob=TRUE, breaks = seq(1,max(life.time)+12,12))$density
+bins = seq(1,max(life.time)+12,12)
+observed = hist(life.time, main = '', xlab = 't [Months]', breaks = bins)$count
 
 #Calculate the expected life time distribution
-expected = pt(c(1:1200))
+expected = pt(bins[1:length(bins)-1])* 12 * N.women
 
 #Add the expected distribution as a line on our plot
-lines(expected, col="red")
+lines(bins[1:length(bins)-1],expected, col="red")
 
 #Perform a chi2 test to compare the emperical distribution to the theoretical
 p = chi2.test.samples(observed, expected)
