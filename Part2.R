@@ -38,3 +38,31 @@ C = qchisq(p = c(0.025,0.975), df = 999)
 # Conf for stadard deviation: see notes part 2 file
 conf=c(sqrt(999*var(lifeTime)/C[2]),sqrt(999*var(lifeTime)/C[1]))
 mean(lifeTime)
+
+n = length(lifeTime)
+Conf_control1 = mean(lifeTime) - qt(0.975, df =n-1) * sd(lifeTime) / sqrt(n)
+Conf_control2 = mean(lifeTime) + qt(0.975, df =n-1) * sd(lifeTime) / sqrt(n)
+c(mean(lifeTime),Conf_control1,Conf_control2) #mean and CI for the mean
+
+#survival rate after 30.5 months
+(sum(rowSums(count[,1:2])>30.5 & (count[,3]!=0 | count[,4]!=0)))/1000
+
+############# Opgave 8
+Q = Q[1:4,1:4]
+funk = function(t){
+  ones = rep(1,4)
+  p0 = c(1,0,0,0)
+  1 - p0%*%expm(x = Q*t)%*%ones
+
+}
+opg8=vector()
+Elife = vector()
+for (i in 1:1000){
+opg8[i] = funk(i)
+Elife = ecdflife(i)
+}
+plot(opg8)
+lines(ecdf(lifeTime),col='cyan',lwd = 3)
+
+ecdflife = ecdf(lifeTime)
+ks.test(lifeTime, 'funk',1,1000)
