@@ -91,7 +91,7 @@ chi2.test.samples = function(observed, expected){
   for (i in 1:n){
     t=t+((observed[i]-expected[i])^2)/expected[i]
   }
-  pvalue = 1- pchisq(t,df=n-1)
+  pvalue = pchisq(t,df=n-1)
   return(pvalue)
 }
 
