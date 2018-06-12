@@ -180,6 +180,9 @@ max(rowSums(states))
 min(rowSums(states))
 sd(rowSums(states))
 hist(rowSums(states))
+
+
+
 ########## Opgave 5
 
 fraction = vector()
@@ -192,6 +195,14 @@ for (i in 1:100){
 
 X = fraction
 Y = control
+
+X_fractionbar = mean(X)
+Conf_fraction1 = mean(X) - qt(0.975, df =n-1) * sd(X) / sqrt(n)
+Conf_fraction2 = mean(X) + qt(0.975, df =n-1) * sd(X) / sqrt(n)
+c(X_controlbar,Conf_fraction1,Conf_fraction2)
+
+
+
 #Define pi, the initial distribution of states at t=0
 pi = c(1,0,0,0)
 #Ps is the first 4 rows and columns of P
@@ -200,12 +211,20 @@ Ps = P[1:4,1:4]
 ones = c(1,1,1,1)
 # II enhedsmatrice
 II = diag(4)
-library(matlib)
 E = pi%*%solve(II-Ps)%*%ones
 cs = -cov(fraction,control)/var(control)
-Z = fraction+ cs*(control-E)
+Z = fraction + cs*(control-E)
 X_controlbar=mean(Z)
+
 n = 100
 Conf_control1 = mean(Z) - qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 Conf_control2 = mean(Z) + qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 c(X_controlbar,Conf_control1,Conf_control2)
+
+
+#Compare the two variance calculations
+var(X)
+var(Z)
+
+reduction = var(X)/var(Z)
+reduction
