@@ -52,7 +52,12 @@ Q = Q[1:4,1:4]
 funk = function(t){
   ones = rep(1,4)
   p0 = c(1,0,0,0)
-  1 - p0%*%expm(x = Q*t)%*%ones
+  
+  p = vector()
+  for (i in 1:length(t)){
+    p[i] = 1 - p0%*%expm(x = Q*t[i])%*%ones  
+  }
+  return(p)
 
 }
 opg8=vector()
@@ -65,4 +70,4 @@ plot(opg8)
 lines(ecdf(lifeTime),col='cyan',lwd = 3)
 
 ecdflife = ecdf(lifeTime)
-ks.test(lifeTime, 'funk',1,1000)
+ks.test(lifeTime, funk)
