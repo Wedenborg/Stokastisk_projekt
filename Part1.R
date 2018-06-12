@@ -221,6 +221,7 @@ Conf_control1 = mean(Z) - qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 Conf_control2 = mean(Z) + qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 c(X_controlbar,Conf_control1,Conf_control2)
 
+<<<<<<< HEAD
 
 #Compare the two variance calculations
 var(X)
@@ -228,3 +229,6 @@ var(Z)
 
 reduction = var(X)/var(Z)
 reduction
+sd(X)
+sd(Z)
+>>>>>>> 7a1fc65bd7b84b8cf8e5732260d247a1f1b28ea3
