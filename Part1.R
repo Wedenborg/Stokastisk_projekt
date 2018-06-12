@@ -15,55 +15,55 @@ P <- t(P)
 
 
 
-N.women = 1000
+N.woman = 1000
 
 
-simulate.cancer <- function(N.women=1000, t.max=Inf){
+simulate.cancer <- function(N.woman=1000, t.max=Inf){
   '
-  Simulates the evolution of women who previously had breast cancer
+  Simulates the evolution of woman who previously had breast cancer
 
   Args:
-    N.Women : the number of women to simulate
+    N.woman : the number of woman to simulate
     t.max : the maximum number of time steps to take. If not specified we will continue until death
     P : Probability matrix, for moving between the states
 
   Returns:
     states : the time spent in each state for each woman
   '
-  #Initialize all women in state 1
-  women = rep(1,N.women)
-  #Define matrix for saving how long each women spent in each state
-  states = matrix(0, ncol = 5, nrow = N.women)
+  #Initialize all woman in state 1
+  woman = rep(1,N.woman)
+  #Define matrix for saving how long each woman spent in each state
+  states = matrix(0, ncol = 5, nrow = N.woman)
 
 
-  for (i in 1:N.women){
+  for (i in 1:N.woman){
     #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
     t = 0
-    while (!(women[i]>4 || t>t.max)){
+    while (!(woman[i]>4 || t>t.max)){
       #Update the time spent in the current state
-      states[i,women[i]] = states[i,women[i]] + 1
+      states[i,woman[i]] = states[i,woman[i]] + 1
       #Get the new state of the i'th woman
-      women[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[women[i],])
+      woman[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[woman[i],])
       #Update the time step
       t = t + 1
     }
   }
-  return(list("states" = states, "women" = women))
+  return(list("states" = states, "woman" = woman))
 }
 
 
-simulation1 = simulate.cancer(N.women)
+simulation1 = simulate.cancer(N.woman)
 
-#Number of cases with distant cancer, is all the women that havn't been in state 2
+#Number of cases with distant cancer, is all the woman that havn't been in state 2
 N.distant = sum(simulation1$states[,2]==0)
-#Number of cases with local cancer, is all the women that haven been in state 2
+#Number of cases with local cancer, is all the woman that haven been in state 2
 N.locally = sum(simulation1$states[,2]!=0)
 
-#Calculate the ratio of women that get the cancer again locally
-ratio.locally = N.locally/N.women
-sprintf("Proportion of women for whom the cancer reappers locally is %s",(ratio.locally))
+#Calculate the ratio of woman that get the cancer again locally
+ratio.locally = N.locally/N.woman
+sprintf("Proportion of woman for whom the cancer reappers locally is %s",(ratio.locally))
 
-#The life time of each women can be calculated as the sum of time spent in each state
+#The life time of each woman can be calculated as the sum of time spent in each state
 life.time = rowSums(simulation1$states)
 
 #plot the life time distribution
@@ -73,10 +73,10 @@ hist(life.time, main = 'Distribution of life time', xlab = 't [Months]')
 
 
 #run the simulator upto t=120
-simulation.t120 = simulate.cancer(N.women, t.max = 120)
+simulation.t120 = simulate.cancer(N.woman, t.max = 120)
 
-#Plot the distribution of the states for the different women at t=120, and save the observed densities
-observed = hist(simulation.t120$women, breaks = c(0:5), prob=TRUE, main='', xlab = 'State')$density
+#Plot the distribution of the states for the different woman at t=120, and save the observed densities
+observed = hist(simulation.t120$woman, breaks = c(0:5), prob=TRUE, main='', xlab = 'State')$density
 
 #Calculate the expected distribution
 p0 = c(1,0,0,0,0)
@@ -137,47 +137,72 @@ title(sprintf('Life time  chi2 p=%0.3e',p))
 sprintf("P-value for chi2 test between the emperical and expected distribution of life time is  p=%s",p)
 
 
-####### Opgave 4
-N.women = 1000
+####### Opgave 4 - Lifetime estimation
+N.woman = 1000
 t.max = Inf
 
-#simulate.cancer <- function(N.women=1000, t.max=Inf){
-  '
-  Simulates the evolution of women who previously had breast cancer
+#Initialize all woman in state 1
+woman = rep(1,N.woman)
+#Define matrix for saving how long each woman spent in each state
+states = matrix(0, ncol = 5, nrow = N.woman)
 
-  Args:
-  N.Women : the number of women to simulate
-  t.max : the maximum number of time steps to take. If not specified we will continue until death
-  P : Probability matrix, for moving between the states
-
-  Returns:
-  states : the time spent in each state for each woman
-  '
-  #Initialize all women in state 1
-  woman = rep(1,N.women)
-  #Define matrix for saving how long each women spent in each state
-  states = matrix(0, ncol = 5, nrow = N.women)
-
-  i = 1
-  while (i <=10){
-    #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
-    t = 0
-    accept = FALSE
-    while (!(woman[i]>4 || t>t.max)){
-      #Update the time spent in the current state
-      states[i,woman[i]] = states[i,woman[i]] + 1
-      #Get the new state of the i'th woman
-      woman[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[woman[i],])
-      #Update the time step
-      t = t + 1
-
-    }
-    if (states[i,1]<12 && sum(states[i,]>12 )){
-      i = i +1
-      print(states)
+i = 1
+while (i <=1000){
+  #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
+  t = 0
+  accept = FALSE
+  while (!(woman[i]>4 || t>t.max)){
+    #Update the time spent in the current state
+    states[i,woman[i]] = states[i,woman[i]] + 1
+    #Get the new state of the i'th woman
+    woman[i]=sample(x = c(1:5), size =1, replace =TRUE, prob = P[woman[i],])
+    #Update the time step
+    t = t + 1
+    if (states[i,1]>12){
+      woman[i]=1
+      states[i,]=c(0,0,0,0,0)
     }
   }
-#  return(list("states" = states, "women" = woman))
-#}
+  if (states[i,1]<12 && sum(states[i,])>12){
+    i = i +1
+  } else {
+    woman[i]=1
+    states[i,]=c(0,0,0,0,0)
+  }
+}
+## Lifetime calculate mean and var
+mean(rowSums(states))
+var(rowSums(states))
+max(rowSums(states))
+min(rowSums(states))
+sd(rowSums(states))
+hist(rowSums(states))
+########## Opgave 5
 
+fraction = vector()
+control = vector()
+for (i in 1:100){
+  Sim = simulate.cancer(200,Inf)
+  fraction[i] = sum(rowSums(Sim$states)<=350)/200
+  control[i] = sum(rowSums(Sim$states))/200
+}
 
+X = fraction
+Y = control
+#Define pi, the initial distribution of states at t=0
+pi = c(1,0,0,0)
+#Ps is the first 4 rows and columns of P
+Ps = P[1:4,1:4]
+# vector of ones with appropiate dimensions
+ones = c(1,1,1,1)
+# II enhedsmatrice
+II = diag(4)
+library(matlib)
+E = pi%*%solve(II-Ps)%*%ones
+cs = -cov(fraction,control)/var(control)
+Z = fraction+ cs*(control-E)
+X_controlbar=mean(Z)
+n = 100
+Conf_control1 = mean(Z) - qt(0.975, df =n-1) * sd(Z) / sqrt(n)
+Conf_control2 = mean(Z) + qt(0.975, df =n-1) * sd(Z) / sqrt(n)
+c(X_controlbar,Conf_control1,Conf_control2)
