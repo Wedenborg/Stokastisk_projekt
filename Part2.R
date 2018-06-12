@@ -52,22 +52,74 @@ Q = Q[1:4,1:4]
 funk = function(t){
   ones = rep(1,4)
   p0 = c(1,0,0,0)
-  
+
   p = vector()
   for (i in 1:length(t)){
-    p[i] = 1 - p0%*%expm(x = Q*t[i])%*%ones  
+    p[i] = 1 - p0%*%expm(x = Q*t[i])%*%ones
   }
   return(p)
 
 }
-opg8=vector()
-Elife = vector()
-for (i in 1:1000){
-opg8[i] = funk(i)
-Elife = ecdflife(i)
-}
-plot(opg8)
-lines(ecdf(lifeTime),col='cyan',lwd = 3)
+plot(opg8,type ='l',lwd = 3)
+lines(ecdf(lifeTime),col='red',lwd = 3)
 
-ecdflife = ecdf(lifeTime)
 ks.test(lifeTime, funk)
+
+########## Opgave 9
+# Q matrix for treatment
+Q2 = matrix(c(-0.0085,0,0,0,0
+              ,0.0025,-0.014,0,0,0
+              ,0.00125,0,-0.008,0,0
+              ,0,0.002,0.003,-0.009,0
+              ,0.001,0.005,0.005,0.009,0),5,5)
+
+woman = rep(1,1000) # Create 1000 women
+N.iter = 1000
+
+count_treat = matrix(0, ncol = 5, nrow = N.iter) #
+
+for (i in 1:N.iter){
+  while (woman[i]<5){
+    event = rexp(1,rate=-Q2[woman[i],woman[i]])
+    count_treat[i,woman[i]] = event
+    if (woman[i] <4){
+      woman[i]=sample(x = c((woman[i]+1):5), size =1, replace =TRUE,
+                      prob =-(Q2[woman[i],(woman[i]+1):5])/Q2[woman[i],woman[i]])
+    }
+    else{
+      woman[i]=5
+    }
+
+  }
+}
+
+# S function for non-treatment
+life_cdf=ecdf(lifeTime)
+
+S_func = function(dt , t){
+  S = (1000-dt(t)*1000)/1000
+       return(S)
+}
+plot(S_func(life_cdf,1:1000))
+
+# find s for treatment
+lifeTimeTreat =rowSums(count_treat)
+lifeTreat_cdf=ecdf(lifeTimeTreat)
+plot(S_func(lifeTreat_cdf,1:1000))
+
+
+# plot with death rate for treat and non-treat
+plot(S_func(life_cdf,1:1000),col = 'red',type='l')
+lines(S_func(lifeTreat_cdf,1:1000),col='blue',type='l')
+
+
+#### Opgave 10
+# Log rank test
+N = (S_func(life_cdf,1:1000)+S_func(lifeTreat_cdf,1:1000))*1000
+diff(N)
+for (j in 1:1000){
+  oo=oo+O[j]
+  N[j] = 2000-O
+}
+
+
