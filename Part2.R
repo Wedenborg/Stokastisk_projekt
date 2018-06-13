@@ -60,18 +60,15 @@ funk = function(t){
   return(p)
 
 }
-<<<<<<< HEAD
-plot(o,type ='l',lwd = 3)
-=======
->>>>>>> 3cba345d1cccf05d268beff4a45e0e65a56c70a1
-lines(ecdf(lifeTime),col='red',lwd = 3)
 
+plot(o,type ='l',lwd = 3)
+lines(ecdf(lifeTime),col='red',lwd = 3)
 ks.test(lifeTime, funk)
 
 ########## Opgave 9
 # Q matrix for treatment
-Q2 = matrix(c(-0.0085,0,0,0,0
-              ,0.0025,-0.014,0,0,0
+Q2 = matrix(c(-0.00475,0,0,0,0
+              ,0.0025,-0.007,0,0,0
               ,0.00125,0,-0.008,0,0
               ,0,0.002,0.003,-0.009,0
               ,0.001,0.005,0.005,0.009,0),5,5)
@@ -148,5 +145,9 @@ pValue = 1-pnorm(Z)
 mean(V)
 
 ####### Opgave 11
-# Man rykker stadie kontinuert og ikke længere på en fast dag på måneden
-#
+# Man rykker stadie kontinuert og ikke længere syg på en fast dag på måneden
+# Man kan ikke ændre i sygdomsforløbet fordi man allerede har determineret personens sygdomsforløb
+### Dette kan gøres nemt i den anden ved at ændre Q
+# Erlang kan godt implementeres, men raterne skal laves om
+
+# Lav funktion, der implementerer Erlang. Tager Q-matrice
