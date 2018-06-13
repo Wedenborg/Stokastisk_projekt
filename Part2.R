@@ -115,11 +115,23 @@ lines(S_func(lifeTreat_cdf,1:1000),col='blue',type='l')
 
 #### Opgave 10
 # Log rank test
-N = (S_func(life_cdf,1:1000)+S_func(lifeTreat_cdf,1:1000))*1000
-diff(N)
-for (j in 1:1000){
-  oo=oo+O[j]
-  N[j] = 2000-O
-}
+N1 = S_func(life_cdf,0:1000)*1000
+N2 = S_func(lifeTreat_cdf,0:1000)*1000
+N = (S_func(life_cdf,0:1000)+S_func(lifeTreat_cdf,0:1000))*1000
 
+O1 = abs(diff(N1))
+O2 = abs(diff(N2))
+O = abs(diff(N))
 
+N = N[1:1000]
+N2 = N2[1:1000]
+
+E2 = O/N*N2
+
+V = (O*(N2/N)*(1-N2/N)*(N-O))/(N-1)
+
+Z = sum(O2-E2)/sum(V)
+
+pValue = 1-pnorm(Z)
+
+mean(V)
