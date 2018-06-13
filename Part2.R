@@ -1,3 +1,4 @@
+library(expm)
 rm(list=ls())
 Q = matrix(
   c(-0.0085,  0.005,  0.0025,       0,   0.001,
@@ -101,38 +102,45 @@ for (i in 1:N.iter){
   }
 }
 
-# S function for non-treatment
-life_cdf=ecdf(lifeTime)
+cdf = function(lifeTime){
+  bins = sort(lifeTime)
+  cdf.value = cumsum(hist(lifeTime, breaks = bins, plot=FALSE)$count)/1000
+  return(list("t"=tail(bins,-1), "cdf"=cdf.value))
+}
 
-S_func = function(dt , t){
-  S = (1000-dt(t)*1000)/1000
+# S function for non-treatment
+
+life_cdf=cdf(lifeTime)
+
+S_func = function(cdf){
+  S = (1000-cdf$cdf*1000)/1000
        return(S)
 }
-plot(S_func(life_cdf,1:1000))
+plot(life_cdf$t,S_func(life_cdf),'l')
 
 # find s for treatment
 lifeTimeTreat =rowSums(count_treat)
-lifeTreat_cdf=ecdf(lifeTimeTreat)
-plot(S_func(lifeTreat_cdf,1:1000))
+lifeTreat_cdf=cdf(lifeTimeTreat)
+plot(lifeTreat_cdf$t,S_func(lifeTreat_cdf),'l')
 
-
+  
 # plot with death rate for treat and non-treat
-plot(S_func(life_cdf,1:1000),col = 'red',type='l')
-lines(S_func(lifeTreat_cdf,1:1000),col='blue',type='l')
+plot(life_cdf$t,S_func(life_cdf),col = 'red',type='s')
+lines(lifeTreat_cdf$t,S_func(lifeTreat_cdf),col='blue',type='s')
 
 
 #### Opgave 10
 # Log rank test
-N1 = S_func(life_cdf,0:1000)*1000
-N2 = S_func(lifeTreat_cdf,0:1000)*1000
-N = (S_func(life_cdf,0:1000)+S_func(lifeTreat_cdf,0:1000))*1000
+N1 = head(S_func(life_cdf)*1000,-1)
+N2 = head(S_func(lifeTreat_cdf)*1000,-1)
+N = N1+N2
 
 O1 = abs(diff(N1))
 O2 = abs(diff(N2))
 O = abs(diff(N))
 
-N = N[1:1000]
-N2 = N2[1:1000]
+N = tail(N,-1)
+N2 = tail(N2,-1)
 
 E2 = O/N*N2
 
