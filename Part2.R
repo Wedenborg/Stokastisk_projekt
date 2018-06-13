@@ -1,3 +1,4 @@
+library(expm)
 rm(list=ls())
 Q = matrix(
   c(-0.0085,  0.005,  0.0025,       0,   0.001,
