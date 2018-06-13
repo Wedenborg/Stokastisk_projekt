@@ -123,7 +123,7 @@ lifeTimeTreat =rowSums(count_treat)
 lifeTreat_cdf=cdf(lifeTimeTreat)
 plot(lifeTreat_cdf$t,S_func(lifeTreat_cdf),'l')
 
-  
+
 # plot with death rate for treat and non-treat
 plot(life_cdf$t,S_func(life_cdf),col = 'red',type='s')
 lines(lifeTreat_cdf$t,S_func(lifeTreat_cdf),col='blue',type='s')
@@ -157,5 +157,6 @@ mean(V)
 # Man kan ikke ændre i sygdomsforløbet fordi man allerede har determineret personens sygdomsforløb
 ### Dette kan gøres nemt i den anden ved at ændre Q
 # Erlang kan godt implementeres, men raterne skal laves om
-
 # Lav funktion, der implementerer Erlang. Tager Q-matrice
+
+
