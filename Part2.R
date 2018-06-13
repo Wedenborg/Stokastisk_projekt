@@ -60,7 +60,10 @@ funk = function(t){
   return(p)
 
 }
+<<<<<<< HEAD
 plot(o,type ='l',lwd = 3)
+=======
+>>>>>>> 3cba345d1cccf05d268beff4a45e0e65a56c70a1
 lines(ecdf(lifeTime),col='red',lwd = 3)
 
 ks.test(lifeTime, funk)
