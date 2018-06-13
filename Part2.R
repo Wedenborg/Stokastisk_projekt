@@ -60,7 +60,7 @@ funk = function(t){
   return(p)
 
 }
-plot(opg8,type ='l',lwd = 3)
+plot(o,type ='l',lwd = 3)
 lines(ecdf(lifeTime),col='red',lwd = 3)
 
 ks.test(lifeTime, funk)
@@ -74,6 +74,14 @@ Q2 = matrix(c(-0.0085,0,0,0,0
               ,0.001,0.005,0.005,0.009,0),5,5)
 
 woman = rep(1,1000) # Create 1000 women
+Q = matrix(
+  c(-0.0085,  0.005,  0.0025,       0,   0.001,
+    0, -0.014,   0.005,   0.004,   0.005,
+    0,      0,  -0.008,   0.003,   0.005,
+    0,      0,       0,  -0.009,   0.009,
+    0,      0,       0,       0,       0),
+  nrow = 5,
+  ncol = 5)
 N.iter = 1000
 
 count_treat = matrix(0, ncol = 5, nrow = N.iter) #
