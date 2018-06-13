@@ -60,7 +60,8 @@ funk = function(t){
   return(p)
 
 }
-plot(opg8,type ='l',lwd = 3)
+t = c(1:1000)
+plot(funk(t),type ='l',lwd = 3)
 lines(ecdf(lifeTime),col='red',lwd = 3)
 
 ks.test(lifeTime, funk)
