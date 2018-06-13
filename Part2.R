@@ -136,3 +136,7 @@ Z = sum(O2-E2)/sum(V)
 pValue = 1-pnorm(Z)
 
 mean(V)
+
+####### Opgave 11
+# Man rykker stadie kontinuert og ikke længere på en fast dag på måneden
+#
