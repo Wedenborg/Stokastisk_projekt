@@ -125,8 +125,9 @@ plot(lifeTreat_cdf$t,S_func(lifeTreat_cdf),'l')
 
 
 # plot with death rate for treat and non-treat
-plot(life_cdf$t,S_func(life_cdf),col = 'red',type='s')
+plot(life_cdf$t,S_func(life_cdf),col = 'red',type='s',xlab = 't [months]', ylab = 'Women_Alive')
 lines(lifeTreat_cdf$t,S_func(lifeTreat_cdf),col='blue',type='s')
+title('Survival functions')
 
 
 #### Opgave 10
@@ -150,12 +151,11 @@ Z = sum(O2-E2)/sum(V)
 
 pValue = 1-pnorm(Z)
 
-mean(V)
 
 ####### Opgave 11
-# Man rykker stadie kontinuert og ikke længere syg på en fast dag på måneden
-# Man kan ikke ændre i sygdomsforløbet fordi man allerede har determineret personens sygdomsforløb
-### Dette kan gøres nemt i den anden ved at ændre Q
+# Man rykker stadie kontinuert og ikke l??ngere syg p?? en fast dag p?? m??neden
+# Man kan ikke ??ndre i sygdomsforl??bet fordi man allerede har determineret personens sygdomsforl??b
+### Dette kan g??res nemt i den anden ved at ??ndre Q
 # Erlang kan godt implementeres, men raterne skal laves om
 # Lav funktion, der implementerer Erlang. Tager Q-matrice
 
