@@ -31,8 +31,8 @@ for (i in 1:N.iter){
 
   }
 }
-Y = matrix(1, nrow = length(woman), ncol = 26)
-for (t in seq(48,1200, 48)){
+Y = matrix(1, nrow = length(woman), ncol = 36)
+for (t in seq(48,1680, 48)){
   for (i in 1:dim(count)[1]){
     if (t < count[i,1]){
       Y[i,t/48+1] = 1
@@ -47,7 +47,7 @@ for (t in seq(48,1200, 48)){
     }
   }
 }
-sum(Y[,26])
+sum(Y[,36])
 
 ############ Opgave 13
 
