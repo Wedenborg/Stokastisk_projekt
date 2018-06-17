@@ -135,7 +135,7 @@ Qk = matrix(c(-0.005,0,0,0,0,
             0.00125,0.0015,0.0025,0.005,0),5,5)
 rowSums(Qk)
 
-converged = TRUE
+converged = FALSE
 fejl = vector() 
 
 while(!converged){
@@ -153,6 +153,7 @@ while(!converged){
         Qk[i,j] = sample$N[i,j]/sample$S[i] 
       }
     }
+    Qk[i,i]=-rowSums(Qk)[i] 
   }
   
   #Add the error to the list of errors
