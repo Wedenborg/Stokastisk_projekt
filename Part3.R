@@ -33,10 +33,11 @@ for (i in 1:N.women){
     else{
       woman[i]=5
     }
-
   }
 }
-#Create the Y matrix, which contains the state at each time step of 48h
+
+# Create the time series based on the simulated lifetimes
+# We simulate over 1680 months, a little over 137 years
 Y = matrix(1, nrow = length(woman), ncol = 36)
 #Run in steps of 48 hours
 for (t in seq(48,1680, 48)){
@@ -57,6 +58,10 @@ for (t in seq(48,1680, 48)){
   }
 }
 
+# Calculate the sum of the last column,
+# it has to add up to 5000, as we simulate till all women are dead
+sum(Y[,36])
+
 
 # Task 13 -----------------------------------------------------------------
 
@@ -72,7 +77,7 @@ sample.womans = function(Q, Y, N.women=1000, N.samples=100){
     N.samples : the number of samples to try at each state change, in order to find a state satisfying the criterias
 
   Returns:
-    S : the Sojurn time for each state (state 5 is be design always 0)
+    S : the Sojurn time for each state (state 5 is by design always 0)
     N : The number of women jumping from state i to j
     states : the time spent in each state by each woman
   '
@@ -176,6 +181,6 @@ while(!converged){
   #Print the error, for our own sake
   print(tail(fejl,1)) 
   #Update congervence flag
-  converged = max(abs(Qk-Q_old))<10^(-3)
+  converged = max(abs(Qk-Q_old))<10^(-5)
 }
 
