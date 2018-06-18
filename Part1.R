@@ -1,6 +1,6 @@
 library(expm)
 
-# Opgave 1 ----------------------------------------------------------------
+# Task 1 ----------------------------------------------------------------
 rm(list=ls())
 #Define our P matrix
 P = matrix(
@@ -13,11 +13,9 @@ P = matrix(
   ncol = 5)
 P <- t(P)
 
+N.women = 1000
 
-
-N.woman = 1000
-
-
+#create a function that can simulate the women with cancer
 simulate.cancer <- function(N.woman=1000, t.max=Inf){
   '
   Simulates the evolution of woman who previously had breast cancer
@@ -51,8 +49,8 @@ simulate.cancer <- function(N.woman=1000, t.max=Inf){
   return(list("states" = states, "woman" = woman))
 }
 
-
-simulation1 = simulate.cancer(N.woman)
+#Run the simulation
+simulation1 = simulate.cancer(N.women)
 
 #Number of cases with distant cancer, is all the woman that havn't been in state 2
 N.distant = sum(simulation1$states[,2]==0)
@@ -60,7 +58,7 @@ N.distant = sum(simulation1$states[,2]==0)
 N.locally = sum(simulation1$states[,2]!=0)
 
 #Calculate the ratio of woman that get the cancer again locally
-ratio.locally = N.locally/N.woman
+ratio.locally = N.locally/N.women
 sprintf("Proportion of woman for whom the cancer reappers locally is %s",(ratio.locally))
 
 #The life time of each woman can be calculated as the sum of time spent in each state
@@ -69,15 +67,12 @@ life.time = rowSums(simulation1$states)
 #plot the life time distribution
 hist(life.time, main = 'Distribution of life time', xlab = 't [Months]')
 
-# Opgave 2 ----------------------------------------------------------------
-
-
-#run the simulator upto t=120
-simulation.t120 = simulate.cancer(N.woman, t.max = 120)
-
+# Task 2 ----------------------------------------------------------------
+#run the simulator up to t=120
+simulation.t120 = simulate.cancer(N.women, t.max = 120)
 
 #Plot the distribution of the states for the different women at t=120, and save the observed densities
-observed = hist(simulation.t120$women, breaks = c(0:5), main='', xlab = 'State')$count
+observed = hist(simulation.t120$woman, breaks = c(0:5), main='', xlab = 'State')$count
 
 
 #Calculate the expected distribution
@@ -85,7 +80,10 @@ p0 = c(1,0,0,0,0)
 expected = p0 %*% (P%^%120)*N.women
 #Add the expected distribution to the plot
 lines(c(0:4), expected, type="s", col="red")
+lines(c(4:5), c(tail(expected[1,],1),tail(expected[1,],1)), col="red")
 
+
+#Create a function to perform a chi2 test
 chi2.test.samples = function(observed, expected){
   'Performs a chi2 test, given a list of observed and expected values'
   n = length(observed)
@@ -103,7 +101,8 @@ title(sprintf("States at t=120, p=%0.3e",p))
 sprintf("P-value for chi2 test between the emperical and expected distribution of states at t=120 is  p=%s",p)
 
 
-####### Opgave 3
+
+# Task 3 ------------------------------------------------------------------
 
 pt = function(t){
   'Calculate the probability distribution P(T=t) of living t months'
@@ -135,13 +134,15 @@ lines(bins[1:length(bins)-1],expected, col="red")
 
 #Perform a chi2 test to compare the emperical distribution to the theoretical
 p = chi2.test.samples(observed, expected)
+
 #Update the title of the histogram with the p-value
 title(sprintf('Life time  chi2 p=%0.3e',p))
 sprintf("P-value for chi2 test between the emperical and expected distribution of life time is  p=%s",p)
 
 
-####### Opgave 4 - Lifetime estimation
-N.woman = 1000
+
+# Task 4 ------------------------------------------------------------------
+
 t.max = Inf
 
 #Initialize all woman in state 1
@@ -151,9 +152,9 @@ states = matrix(0, ncol = 5, nrow = N.woman)
 
 i = 1
 while (i <=1000){
-  #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
   t = 0
   accept = FALSE
+  #Simulate each woman while either they are still alive, or until the maximum time step t.max, if specified
   while (!(woman[i]>4 || t>t.max)){
     #Update the time spent in the current state
     states[i,woman[i]] = states[i,woman[i]] + 1
@@ -166,6 +167,7 @@ while (i <=1000){
       states[i,]=c(0,0,0,0,0)
     }
   }
+  #Only accept the woman if she spent less than 12 months in state 1, and lived more than 12 months
   if (states[i,1]<12 && sum(states[i,])>12){
     i = i +1
   } else {
@@ -173,33 +175,42 @@ while (i <=1000){
     states[i,]=c(0,0,0,0,0)
   }
 }
+
 ## Lifetime calculate mean and var
 mean(rowSums(states))
 var(rowSums(states))
 max(rowSums(states))
 min(rowSums(states))
 sd(rowSums(states))
-hist(rowSums(states))
+hist(rowSums(states), xlab='t [months]', main='Distribution of lifetime with requirements')
 
+# Task 5 ------------------------------------------------------------------
 
-
-########## Opgave 5
-
+#Create variables for saving the fraction and the control variable
 fraction = vector()
 control = vector()
-for (i in 1:100){
+
+n = 100
+
+#Run the simulation 100 times
+for (i in 1:n){
+  #Run a simulation of 200 women until they die
   Sim = simulate.cancer(200,Inf)
+  #Record the fraction of women living more than 350 months
   fraction[i] = sum(rowSums(Sim$states)<=350)/200
-  control[i] = sum(rowSums(Sim$states))/200
+  #Record the control variable, which is just the mean lifetime
+  control[i] = mean(rowSums(Sim$states))
 }
 
+#Redefine the variables
 X = fraction
 Y = control
 
+#calculate mean of the fraction using without the control variable
 X_fractionbar = mean(X)
 Conf_fraction1 = mean(X) - qt(0.975, df =n-1) * sd(X) / sqrt(n)
 Conf_fraction2 = mean(X) + qt(0.975, df =n-1) * sd(X) / sqrt(n)
-c(X_controlbar,Conf_fraction1,Conf_fraction2)
+c(X_fractionbar,Conf_fraction1,Conf_fraction2)
 
 
 
@@ -209,14 +220,18 @@ pi = c(1,0,0,0)
 Ps = P[1:4,1:4]
 # vector of ones with appropiate dimensions
 ones = c(1,1,1,1)
-# II enhedsmatrice
+# II is the identity matrix
 II = diag(4)
-E = pi%*%solve(II-Ps)%*%ones
+#Calculate the expectation value of the control variable
+E = c(pi%*%solve(II-Ps)%*%ones)
+#Find the c constant
 cs = -cov(fraction,control)/var(control)
+#Calculate our estimator of the fraction, using the control variable
 Z = fraction + cs*(control-E)
+#Find the mean
 X_controlbar=mean(Z)
 
-n = 100
+#Calculate the fraction with confidence interval using the control variable method
 Conf_control1 = mean(Z) - qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 Conf_control2 = mean(Z) + qt(0.975, df =n-1) * sd(Z) / sqrt(n)
 c(X_controlbar,Conf_control1,Conf_control2)
@@ -226,7 +241,8 @@ c(X_controlbar,Conf_control1,Conf_control2)
 var(X)
 var(Z)
 
+#print the reduction in variance using the control variable method
 reduction = var(X)/var(Z)
-reduction
+print(reduction)
 
 
