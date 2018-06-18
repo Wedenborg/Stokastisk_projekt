@@ -20,7 +20,8 @@ woman = rep(1,1000) # Create 1000 women
 N.iter = 1000
 count = matrix(0, ncol = 5, nrow = N.iter) #
 variable = 1
-k = 2
+k = 2 # k is the Erlang "shape"
+
 # Simulate the lifetime of the women
 for (i in 1:N.iter){
   while (woman[i]<5){ #Woman has to have state under 5. otherwise they are dead
@@ -29,14 +30,18 @@ for (i in 1:N.iter){
     if (woman[i] <4 & variable == k){
       woman[i]=sample(x = c((woman[i]+1):5), size =1, replace =TRUE,
                       prob =-(Q[woman[i],(woman[i]+1):5])/Q[woman[i],woman[i]])
-      variable = 1
+      variable = 1 # First fase in new state
     }
     else if (variable != k){
-      variable = variable +1
+      variable = variable +1 # Next state
     } else {
       woman[i]=5
-      variable = 1
+      variable = 1 # State is reset
     }
   }
 }
-hist(rowSums(count))
+
+# Visualize the lifetime for the women
+lifeTime = rowSums(count)
+hist(lifeTime)
+
