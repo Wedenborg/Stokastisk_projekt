@@ -148,4 +148,29 @@ Z = sum(O2-E2)/sum(V)
 pValue = 1-pnorm(Z)
 
 
+############# Task 11
+#Initializations
+woman = rep(1,1000) # Create 1000 women
+N.iter = 1000
+count = matrix(0, ncol = 5, nrow = N.iter) #
+
+# Simulate the lifetime of the women
+for (i in 1:N.iter){
+  while (woman[i]<5){ #Woman has to have state under 5. otherwise they are dead 
+    event = rexp(1,rate=-Q[woman[i],woman[i]])
+    count[i,woman[i]] = event
+    if (woman[i] <4){
+      woman[i]=sample(x = c((woman[i]+1):5), size =1, replace =TRUE,
+                      prob =-(Q[woman[i],(woman[i]+1):5])/Q[woman[i],woman[i]])
+    }
+    else{
+      woman[i]=5
+    }
+  }
+}
+
+# Visualize the lifetime for the women
+lifeTime = rowSums(count)
+hist(lifeTime)
+C = qchisq(p = c(0.025,0.975), df = 999)
 
