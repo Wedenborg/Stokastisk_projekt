@@ -20,7 +20,7 @@ woman = rep(1,1000) # Create 1000 women
 N.iter = 1000
 count = matrix(0, ncol = 5, nrow = N.iter) #
 variable = 1
-k = 2 # k is the Erlang "shape"
+k = 4 # k is the Erlang "shape"
 
 # Simulate the lifetime of the women
 for (i in 1:N.iter){
@@ -44,4 +44,11 @@ for (i in 1:N.iter){
 # Visualize the lifetime for the women
 lifeTime = rowSums(count)
 hist(lifeTime)
+
+hist(count[,1],main = 'Erlang histogram state 1', xlab = 't [months]',prob = TRUE)
+U = c(seq(1,500))
+lambda = -Q[1,1]*k
+
+Erlangdist = (lambda^k*U^(k-1)*exp(-lambda*U))/factorial(k-1)
+lines(U,Erlangdist,col = 'red')
 
