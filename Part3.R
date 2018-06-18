@@ -1,6 +1,6 @@
-#################### Part 3
+#Define our Q matrix
 Q = matrix(
-  c(-0.0085,  0.005,  0.0024,       0.0001,   0.001,
+  c(-0.0085,  0.005,  0.0025,       0,   0.001,
     0, -0.014,   0.005,   0.004,   0.005,
     0,      0,  -0.008,   0.003,   0.005,
     0,      0,       0,  -0.009,   0.009,
@@ -10,17 +10,22 @@ Q = matrix(
 Q <- t(Q)
 
 
-## Task 12
+# Task 12 -----------------------------------------------------------------
 
-woman = rep(1,1000) # Create 1000 women
-N.iter = 1000
+N.women = 1000
+woman = rep(1,N.women) # Create 1000 women
 
-count = matrix(0, ncol = 5, nrow = N.iter) #
+#Define a matrix for our states
+states = matrix(0, ncol = 5, nrow = N.women) 
 
-for (i in 1:N.iter){
+#Loop over the number of women
+for (i in 1:N.women){
+  #Run until the women is dead
   while (woman[i]<5){
+    #Generate the new state, and time of change
     event = rexp(1,rate=-Q[woman[i],woman[i]])
-    count[i,woman[i]] = event
+    states[i,woman[i]] = event
+    #If the woman is in state 4, the only option is 5
     if (woman[i] <4){
       woman[i]=sample(x = c((woman[i]+1):5), size =1, replace =TRUE,
                       prob =-(Q[woman[i],(woman[i]+1):5])/Q[woman[i],woman[i]])
@@ -31,29 +36,34 @@ for (i in 1:N.iter){
 
   }
 }
+#Create the Y matrix, which contains the state at each time step of 48h
 Y = matrix(1, nrow = length(woman), ncol = 36)
+#Run in steps of 48 hours
 for (t in seq(48,1680, 48)){
-  for (i in 1:dim(count)[1]){
-    if (t < count[i,1]){
+  #Iterate over each of the women
+  for (i in 1:dim(states)[1]){
+    #Check what state the woman is in at time t
+    if (t < states[i,1]){
       Y[i,t/48+1] = 1
-    } else if (t< (count[i,1]+count[i,2])){
+    } else if (t < (states[i,1] + states[i,2])){
       Y[i,t/48+1] = 2
-    } else if (t< (count[i,1]+count[i,2]+count[i,3])){
+    } else if (t < (states[i,1] + states[i,2] + states[i,3])){
       Y[i,t/48+1] = 3
-    } else if (t< (count[i,1]+count[i,2]+count[i,3]+count[i,4])){
+    } else if (t < (states[i,1] + states[i,2] + states[i,3] + states[i,4])){
       Y[i,t/48+1] = 4
     } else {
       Y[i,t/48+1] = 5
     }
   }
 }
-sum(Y[,36])
 
-############ Opgave 13
+
+# Task 13 -----------------------------------------------------------------
+
 
 sample.womans = function(Q, Y, N.women=1000, N.samples=100){
   '
-  Samples some women in continous time, given a Q matrix
+  Samples some women in continous time, given a Q matrix and Y vector
   
   Args:
     Q : The probability matrix
@@ -67,9 +77,7 @@ sample.womans = function(Q, Y, N.women=1000, N.samples=100){
     states : the time spent in each state by each woman
   '
   woman = rep(1,N.women) # Create 1000 women
-  
-  states = matrix(0, ncol = 5, nrow = N.women) #
-  i = 1
+  states = matrix(0, ncol = 5, nrow = N.women) 
   
   N = matrix(0, ncol=5, nrow = 5)
   S = rep(0, 5)
@@ -128,16 +136,20 @@ sample.womans = function(Q, Y, N.women=1000, N.samples=100){
   return(list("S" = S, "N" = N, "states" = states))
 }
 
+#Our initial guess of the  Q matrix, where there is equal probability of each jump
 Qk = matrix(c(-0.005,0,0,0,0,
             0.00125,-0.005,0,0,0,
             0.00125,0.002,-0.005,0,0,
             0.00125,0.0015,0.0025,-0.005,0,
             0.00125,0.0015,0.0025,0.005,0),5,5)
-rowSums(Qk)
 
+
+#Initialize convergence flag
 converged = FALSE
+#Create vector for storing the error at each iteration
 fejl = vector() 
 
+#Run until convergence
 while(!converged){
   
   #Generate a sample
@@ -153,6 +165,9 @@ while(!converged){
         Qk[i,j] = sample$N[i,j]/sample$S[i] 
       }
     }
+    #Reset the diagonal
+    Qk[i,i] = 0
+    #Update the diagonal
     Qk[i,i]=-rowSums(Qk)[i] 
   }
   
