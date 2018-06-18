@@ -1,6 +1,7 @@
 #################### Part 3
+#Initialize the Q-matrix
 Q = matrix(
-  c(-0.0085,  0.005,  0.0024,       0.0001,   0.001,
+  c(-0.0085,  0.005,  0.0025,0.000,   0.001,
     0, -0.014,   0.005,   0.004,   0.005,
     0,      0,  -0.008,   0.003,   0.005,
     0,      0,       0,  -0.009,   0.009,
@@ -10,13 +11,13 @@ Q = matrix(
 Q <- t(Q)
 
 
-## Task 12
+############ Task 12
 
 woman = rep(1,1000) # Create 1000 women
 N.iter = 1000
-
 count = matrix(0, ncol = 5, nrow = N.iter) #
 
+#Simulate the lifetime of the women
 for (i in 1:N.iter){
   while (woman[i]<5){
     event = rexp(1,rate=-Q[woman[i],woman[i]])
@@ -28,9 +29,11 @@ for (i in 1:N.iter){
     else{
       woman[i]=5
     }
-
   }
 }
+
+# Create the time series based on the simulated lifetimes
+# We simulate over 1680 months, a little over 137 years
 Y = matrix(1, nrow = length(woman), ncol = 36)
 for (t in seq(48,1680, 48)){
   for (i in 1:dim(count)[1]){
@@ -47,9 +50,12 @@ for (t in seq(48,1680, 48)){
     }
   }
 }
+
+# Calculate the sum of the last column,
+# it has to add up to 5000, as we simulate till all women are dead
 sum(Y[,36])
 
-############ Opgave 13
+############ Task 13
 
 sample.womans = function(Q, Y, N.women=1000, N.samples=100){
   '
@@ -62,7 +68,7 @@ sample.womans = function(Q, Y, N.women=1000, N.samples=100){
     N.samples : the number of samples to try at each state change, in order to find a state satisfying the criterias
 
   Returns:
-    S : the Sojurn time for each state (state 5 is be design always 0)
+    S : the Sojurn time for each state (state 5 is by design always 0)
     N : The number of women jumping from state i to j
     states : the time spent in each state by each woman
   '
@@ -128,6 +134,7 @@ sample.womans = function(Q, Y, N.women=1000, N.samples=100){
   return(list("S" = S, "N" = N, "states" = states))
 }
 
+#Initial guess Q0
 Qk = matrix(c(-0.005,0,0,0,0,
             0.00125,-0.005,0,0,0,
             0.00125,0.002,-0.005,0,0,
@@ -153,6 +160,7 @@ while(!converged){
         Qk[i,j] = sample$N[i,j]/sample$S[i] 
       }
     }
+    Qk[i,i]=0
     Qk[i,i]=-rowSums(Qk)[i] 
   }
   
@@ -161,6 +169,6 @@ while(!converged){
   #Print the error, for our own sake
   print(tail(fejl,1)) 
   #Update congervence flag
-  converged = max(abs(Qk-Q_old))<10^(-3)
+  converged = max(abs(Qk-Q_old))<10^(-5)
 }
 
