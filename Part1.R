@@ -146,9 +146,9 @@ sprintf("P-value for chi2 test between the emperical and expected distribution o
 t.max = Inf
 
 #Initialize all woman in state 1
-woman = rep(1,N.woman)
+woman = rep(1,N.women)
 #Define matrix for saving how long each woman spent in each state
-states = matrix(0, ncol = 5, nrow = N.woman)
+states = matrix(0, ncol = 5, nrow = N.women)
 
 i = 1
 while (i <=1000){

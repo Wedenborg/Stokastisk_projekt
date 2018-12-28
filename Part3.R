@@ -158,7 +158,7 @@ fejl = vector()
 while(!converged){
   
   #Generate a sample
-  sample = sample.womans(Qk, Y)
+  sample = sample.womans(Qk, Y, N.women = N.women)
   
   #create a copy of the current Q matrix, for comparison
   Q_old = Qk
@@ -181,6 +181,6 @@ while(!converged){
   #Print the error, for our own sake
   print(tail(fejl,1)) 
   #Update congervence flag
-  converged = max(abs(Qk-Q_old))<10^(-5)
+  converged = max(abs(Qk-Q_old))<10^(-3)
 }
 
